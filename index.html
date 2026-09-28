@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="C3 Calculator">
+  <meta name="theme-color" content="#111827">
+  <title>C3 Profitability Calculator</title>
+  <style>
+    :root{
+      --bg:#030b14; --card:#071522; --text:#ffffff; --muted:#b8c7d9;
+      --border:#176da8; --dark:#02070d; --blue:#0797e6; --green:#15803d; --yellow:#ca8a04; --red:#dc2626;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      background:linear-gradient(180deg,#02070d 0%,#061522 100%); color:var(--text); -webkit-text-size-adjust:100%;
+    }
+    .wrap{max-width:680px;margin:0 auto;padding:18px 14px 40px}
+    .hero{
+      background:linear-gradient(135deg,#02070d,#07304d);color:white;border:1px solid #0797e6;border-radius:18px;padding:20px 18px;margin-bottom:14px;
+      box-shadow:0 8px 24px rgba(0,0,0,.12)
+    }
+    .brand{font-size:28px;font-weight:900;letter-spacing:.4px}
+    .sub{opacity:.8;margin-top:4px;font-size:14px}
+    .card{
+      background:linear-gradient(180deg,#071522,#04101a);border:1px solid #176da8;border-radius:18px;padding:16px;margin:12px 0;
+      box-shadow:0 3px 14px rgba(0,0,0,.07)
+    }
+    h2{font-size:18px;margin:0 0 12px}
+    .field{margin:12px 0}
+    label{display:block;font-size:14px;font-weight:700;margin:0 0 6px}
+    .input-wrap{position:relative}
+    .prefix,.suffix{
+      position:absolute;top:50%;transform:translateY(-50%);font-weight:700;color:#8ecdf5;pointer-events:none
+    }
+    .prefix{left:14px}.suffix{right:14px}
+    input{
+      width:100%;min-height:50px;border:1px solid var(--border);border-radius:12px;
+      font-size:18px;padding:11px 14px;background:#06111c;color:#ffffff;outline:none
+    }
+    input.money{padding-left:30px}
+    input.percent{padding-right:34px}
+    input:focus{border-color:#0797e6;box-shadow:0 0 0 2px rgba(17,24,39,.08)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .results{display:grid;gap:10px}
+    .result{
+      border:1px solid #176da8;border-radius:13px;padding:12px 14px;
+      display:flex;align-items:center;justify-content:space-between;gap:12px
+    }
+    .result span{color:var(--muted);font-size:14px}
+    .result strong{font-size:18px;text-align:right}
+    .margin-box{
+      border-radius:16px;padding:18px;color:white;text-align:center;margin-top:12px;
+      transition:background .15s ease
+    }
+    .margin-label{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;opacity:.9}
+    .margin-value{font-size:42px;font-weight:900;margin:2px 0}
+    .margin-status{font-size:15px;font-weight:800}
+    .green{background:var(--green)} .yellow{background:var(--yellow)} .red{background:var(--red)}
+    .threshold{font-size:12px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5}
+    .buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+    button{
+      min-height:50px;border:0;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer
+    }
+    .save{background:linear-gradient(180deg,#0797e6,#0564a5);color:white}.reset{background:#ffffff;color:#071522}
+    .saved{height:18px;text-align:center;color:var(--green);font-size:13px;font-weight:700;margin-top:8px}
+    .foot{font-size:12px;color:var(--muted);line-height:1.45;margin-top:14px}
+    @media(max-width:430px){.grid{grid-template-columns:1fr}.brand{font-size:25px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="brand">C3 Profitability Calculator</div>
+    <div class="sub">Chicago Cleaning Company • Quick account pricing</div>
+  </header>
+
+  <section class="card">
+    <h2>Contract & Service</h2>
+    <div class="field">
+      <label for="contract">Proposed Monthly Contract</label>
+      <div class="input-wrap"><span class="prefix">$</span>
+        <input class="money" id="contract" type="number" inputmode="decimal" min="0" step="50" value="1500">
+      </div>
+    </div>
+    <div class="grid">
+      <div class="field">
+        <label for="visits">Visits Per Week</label>
+        <input id="visits" type="number" inputmode="decimal" min="0" step="0.5" value="3">
+      </div>
+      <div class="field">
+        <label for="cleaners">Cleaners Per Visit</label>
+        <input id="cleaners" type="number" inputmode="numeric" min="0" step="1" value="1">
+      </div>
+      <div class="field">
+        <label for="hours">Hours Per Visit</label>
+        <input id="hours" type="number" inputmode="decimal" min="0" step="0.25" value="2">
+      </div>
+      <div class="field">
+        <label for="wage">Cleaner Wage / Hour</label>
+        <div class="input-wrap"><span class="prefix">$</span>
+          <input class="money" id="wage" type="number" inputmode="decimal" min="0" step="0.25" value="17">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Direct Costs</h2>
+    <div class="grid">
+      <div class="field">
+        <label for="burden">Payroll Burden</label>
+        <div class="input-wrap">
+          <input class="percent" id="burden" type="number" inputmode="decimal" min="0" step="0.5" value="15">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label for="supplies">Supplies Per Month</label>
+        <div class="input-wrap"><span class="prefix">$</span>
+          <input class="money" id="supplies" type="number" inputmode="decimal" min="0" step="5" value="50">
+        </div>
+      </div>
+      <div class="field">
+        <label for="travel">Travel Per Month</label>
+        <div class="input-wrap"><span class="prefix">$</span>
+          <input class="money" id="travel" type="number" inputmode="decimal" min="0" step="5" value="0">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Profitability</h2>
+    <div class="results">
+      <div class="result"><span>Monthly Cleaner Hours</span><strong id="monthlyHours">—</strong></div>
+      <div class="result"><span>Base Wages</span><strong id="baseWages">—</strong></div>
+      <div class="result"><span>Payroll Burden Cost</span><strong id="burdenCost">—</strong></div>
+      <div class="result"><span>Total Monthly Direct Cost</span><strong id="directCost">—</strong></div>
+      <div class="result"><span>Monthly Gross Profit</span><strong id="grossProfit">—</strong></div>
+      <div class="result"><span>Minimum Price for 45% Margin</span><strong id="price45">—</strong></div>
+    </div>
+
+    <div id="marginBox" class="margin-box green">
+      <div class="margin-label">Gross Margin</div>
+      <div id="marginValue" class="margin-value">—</div>
+      <div id="marginStatus" class="margin-status"></div>
+    </div>
+    <div class="threshold">GREEN: 45%+ &nbsp; • &nbsp; YELLOW: 35–44.9% &nbsp; • &nbsp; RED: Below 35%</div>
+
+    <div id="profitBox" class="margin-box green" style="margin-top:12px">
+      <div class="margin-label">Estimated Profit</div>
+      <div id="estimatedProfit" class="margin-value">—</div>
+      <div class="margin-status">Per month before general company overhead and income taxes</div>
+    </div>
+
+    <div class="buttons">
+      <button class="save" id="saveBtn" type="button">Save Numbers</button>
+      <button class="reset" id="resetBtn" type="button">Reset Defaults</button>
+    </div>
+    <div id="savedMsg" class="saved"></div>
+
+    <div class="foot">
+      Uses 52 weeks ÷ 12 months (4.333 weeks/month). Gross margin here is account-level revenue minus the direct costs entered above; it is not company net profit and does not include general overhead or income taxes.
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const defaults = {
+    contract:1500, visits:3, cleaners:1, hours:2, wage:17,
+    burden:15, supplies:50, travel:0
+  };
+  const ids = Object.keys(defaults);
+  const $ = id => document.getElementById(id);
+  const num = id => Math.max(0, parseFloat($(id).value) || 0);
+  const money = n => n.toLocaleString('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmt = n => n.toLocaleString('en-US',{maximumFractionDigits:1});
+
+  function calculate(){
+    const revenue = num('contract');
+    const visits = num('visits');
+    const cleaners = num('cleaners');
+    const hours = num('hours');
+    const wage = num('wage');
+    const burdenPct = num('burden') / 100;
+    const supplies = num('supplies');
+    const travel = num('travel');
+
+    const monthlyHours = visits * cleaners * hours * (52/12);
+    const baseWages = monthlyHours * wage;
+    const burdenCost = baseWages * burdenPct;
+    const directCost = baseWages + burdenCost + supplies + travel;
+    const grossProfit = revenue - directCost;
+    const margin = revenue > 0 ? (grossProfit / revenue) * 100 : 0;
+    const minimum45 = directCost / (1 - 0.45);
+
+    $('monthlyHours').textContent = fmt(monthlyHours) + ' hrs';
+    $('baseWages').textContent = money(baseWages);
+    $('burdenCost').textContent = money(burdenCost);
+    $('directCost').textContent = money(directCost);
+    $('grossProfit').textContent = money(grossProfit);
+    $('price45').textContent = money(minimum45);
+    $('marginValue').textContent = margin.toFixed(1) + '%';
+    $('estimatedProfit').textContent = money(grossProfit);
+
+    const profitBox = $('profitBox');
+    profitBox.classList.remove('green','yellow','red');
+    if (margin >= 45) profitBox.classList.add('green');
+    else if (margin >= 35) profitBox.classList.add('yellow');
+    else profitBox.classList.add('red');
+
+    const box = $('marginBox');
+    box.classList.remove('green','yellow','red');
+    if (margin >= 45){
+      box.classList.add('green');
+      $('marginStatus').textContent = 'GREEN — Target margin achieved';
+    } else if (margin >= 35){
+      box.classList.add('yellow');
+      $('marginStatus').textContent = 'YELLOW — Review pricing';
+    } else {
+      box.classList.add('red');
+      $('marginStatus').textContent = 'RED — Below target';
+    }
+  }
+
+  function save(){
+    const data = {};
+    ids.forEach(id => data[id] = $(id).value);
+    localStorage.setItem('c3ProfitabilityV2', JSON.stringify(data));
+    $('savedMsg').textContent = 'Numbers saved on this device.';
+    setTimeout(() => $('savedMsg').textContent = '', 1800);
+  }
+
+  function load(){
+    try{
+      const data = JSON.parse(localStorage.getItem('c3ProfitabilityV2') || 'null');
+      if(data) ids.forEach(id => { if(data[id] !== undefined) $(id).value = data[id]; });
+    } catch(e){}
+    calculate();
+  }
+
+  function reset(){
+    ids.forEach(id => $(id).value = defaults[id]);
+    localStorage.removeItem('c3ProfitabilityV2');
+    $('savedMsg').textContent = 'Defaults restored.';
+    calculate();
+    setTimeout(() => $('savedMsg').textContent = '', 1800);
+  }
+
+  ids.forEach(id => {
+    $(id).addEventListener('input', calculate);
+    $(id).addEventListener('change', calculate);
+  });
+  $('saveBtn').addEventListener('click', save);
+  $('resetBtn').addEventListener('click', reset);
+  load();
+})();
+</script>
+</body>
+</html>
